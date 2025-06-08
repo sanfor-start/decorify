@@ -1,4 +1,35 @@
 <?php
+$server="localhost";
+$user="root";
+$pass="";
+$dbname="projet";
+$connexion=mysqli_connect($server,$user,$pass,$dbname);
+
+$sql = "SELECT * FROM produit LIMIT 1";
+$result = mysqli_query($connexion, $sql);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>
+!-- /////////////////////////////////////////////////////// -->
+
+<?php
 session_start();
 
 $server="localhost";
@@ -227,7 +258,7 @@ p {
     
     <nav>
       <a href="#hero">Home</a>
-      <a href="#product">Products</a>
+      <a href="produitcom.php">Products</a>
       <a href="#contact">Contact us</a>
 
       <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
@@ -286,16 +317,23 @@ p {
 </section>
 
   <section class="products">
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 1">
-      <div class="product-info">
-        <h3>سماعة بلوتوث</h3>
-        <p>120 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
+
+    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <div class="product" id="product">
+                        <img src="image/40.jpg" alt="منتج 1">
+                        <div class="product-info">
+                            <h3><?php echo $row['name'] ?></h3>
+                            <p><?php echo $row['price'] ?>$</p>
+                            <button>أضف إلى السلة</button>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
 
     <div class="product" id="product">
+        <button>Afficher tous</button>
+    </div>
+
+    <!-- <div class="product" id="product">
       <img src="image/41.jpg" alt="منتج 2">
       <div class="product-info">
         <h3>ساعة ذكية</h3>
@@ -309,7 +347,7 @@ p {
       <div class="product-info">
         <h3>حقيبة ظهر</h3>
         <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
+        <button name="add">أضف إلى السلة</button>
       </div>
     </div>
 
@@ -357,7 +395,7 @@ p {
         <button>أضف إلى السلة</button>
       </div>
     </div>
-</div>
+</div> -->
   </section>
 
 <section class="features">

@@ -11,7 +11,7 @@
     <h1><span style="color : blue ;">DECO</span>RIFY </h1>
     <nav>
       <a href="pageaceuil.php">Home</a>
-      <a href="#product">Products</a>
+      <a href="produitcom.php">Products</a>
       <a href="#contact">Contact us </a>
       <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
       <a href="loginout.php">Sign out</a>
