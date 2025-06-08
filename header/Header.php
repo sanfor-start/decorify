@@ -18,6 +18,10 @@
       <?php else : ?>
       <a href="pageaceuil.php">Log in</a>
       <a href="logininscr.php">Create an account</a>
+      <a href="cart.php">
+        <img src="" alt="">
+        <p>Add to cart</p>
+      </a>
       <?php endif ; ?>
     </nav>
   </header>
