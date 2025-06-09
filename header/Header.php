@@ -19,8 +19,9 @@
       <a href="pageaceuil.php">Log in</a>
       <a href="logininscr.php">Create an account</a>
       <a href="cart.php">
-        <img src="" alt="">
-        <p>Add to cart</p>
+        <!-- hhh -->
+        <img src="/image/cart.png" alt="">
+        <p>View Cart</p>
       </a>
       <?php endif ; ?>
     </nav>

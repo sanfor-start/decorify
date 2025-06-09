@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $server = "localhost";
 $user = "root";
 $pass = "";
@@ -6,6 +8,21 @@ $dbname = "projet";
 
 $connexion = mysqli_connect($server, $user, $pass, $dbname);
 
+// Add to cart logic
+if (isset($_POST['add_to_cart'])) {
+    $product_id = $_POST['product_id'];
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    // Add or increment product in cart
+    if (isset($_SESSION['cart'][$product_id])) {
+        $_SESSION['cart'][$product_id]++;
+    } else {
+        $_SESSION['cart'][$product_id] = 1;
+    }
+    // Simple message (optional)
+    $message = "Produit ajouté au panier !";
+}
 
 $sql = "SELECT * FROM produit";
 $result = mysqli_query($connexion, $sql);
@@ -95,6 +112,7 @@ $result = mysqli_query($connexion, $sql);
 </head>
 <body>
     <h1>Liste des Produits</h1>
+    <?php if (!empty($message)) echo "<p style='color:green;'>$message</p>"; ?>
 
     <section class="products">
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
