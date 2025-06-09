@@ -11,13 +11,18 @@
     <h1><span style="color : blue ;">DECO</span>RIFY </h1>
     <nav>
       <a href="pageaceuil.php">Home</a>
-      <a href="#product">Products</a>
+      <a href="produitcom.php">Products</a>
       <a href="#contact">Contact us </a>
       <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
       <a href="loginout.php">Sign out</a>
       <?php else : ?>
       <a href="pageaceuil.php">Log in</a>
       <a href="logininscr.php">Create an account</a>
+      <a href="cart.php">
+        <!-- hhh -->
+        <img src="/image/cart.png" alt="">
+        <p>View Cart</p>
+      </a>
       <?php endif ; ?>
     </nav>
   </header>

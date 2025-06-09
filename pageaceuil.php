@@ -1,11 +1,55 @@
 <?php
-session_start();
-
 $server="localhost";
 $user="root";
 $pass="";
 $dbname="projet";
 $connexion=mysqli_connect($server,$user,$pass,$dbname);
+
+
+
+
+session_start();
+
+// Add to cart logic
+if (isset($_POST['add_to_cart'])) {
+    $product_id = $_POST['product_id'];
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    if (isset($_SESSION['cart'][$product_id])) {
+        $_SESSION['cart'][$product_id]++;
+    } else {
+        $_SESSION['cart'][$product_id] = 1;
+    }
+    // Optional: show a message
+    $message = "Produit ajouté au panier !";
+}
+
+$sql = "SELECT * FROM produit LIMIT 8";
+$result = mysqli_query($connexion, $sql);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>
+<!-- /////////////////////////////////////////////////////// --> 
+
+<?php
 if (
     isset($_POST['send']) &&
     isset($_POST['Nom']) && $_POST['Nom'] != "" &&
@@ -227,7 +271,7 @@ p {
     
     <nav>
       <a href="#hero">Home</a>
-      <a href="#product">Products</a>
+      <a href="produitcom.php">Products</a>
       <a href="#contact">Contact us</a>
 
       <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
@@ -236,6 +280,11 @@ p {
 
       <a href="logincom.php">Log in</a>
       <a href="logininscr.php">Create an account</a>
+
+      <a href="cart.php">
+        <img src="/image/cart.png" alt="">
+        <p>View Cart</p>
+      </a>
       <?php endif ; ?>
     </nav>
     <h1><span style="color : blue ;">DECO</span>RIFY</h1>
@@ -286,79 +335,26 @@ p {
 </section>
 
   <section class="products">
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 1">
-      <div class="product-info">
-        <h3>سماعة بلوتوث</h3>
-        <p>120 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
+        <?php if (!empty($message)) echo "<p style='color:green;text-align:center;'>$message</p>"; ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <div class="product" id="product">
+                <img src="image/40.jpg" alt="منتج 1">
+                <div class="product-info">
+                    <h3><?php echo $row['name'] ?></h3>
+                    <p><?php echo $row['price'] ?>$</p>
+                    <form method="post" action="">
+                        <input type="hidden" name="product_id" value="<?php echo $row['Id']; ?>">
+                        <button type="submit" name="add_to_cart">أضف إلى السلة</button>
+                    </form>
+                </div>
+            </div>
+        <?php endwhile; ?>
+        <!-- Afficher Tous button after products -->
+        <div style="grid-column: 1/-1; text-align:center; margin-top:20px;">
+            <button onclick="window.location.href='produitcom.php'">Afficher Tous</button>
+        </div>
+    </section>
 
-    <div class="product" id="product">
-      <img src="image/41.jpg" alt="منتج 2">
-      <div class="product-info">
-        <h3>ساعة ذكية</h3>
-        <p>250 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/42.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/43.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-     <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-</div>
-  </section>
 
 <section class="features">
   <div class="feature-grid">
