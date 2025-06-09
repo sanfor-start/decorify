@@ -5,38 +5,39 @@ $pass="";
 $dbname="projet";
 $connexion=mysqli_connect($server,$user,$pass,$dbname);
 
-$sql = "SELECT * FROM produit LIMIT 1";
-$result = mysqli_query($connexion, $sql);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
-!-- /////////////////////////////////////////////////////// -->
-
-<?php
 session_start();
 
-$server="localhost";
-$user="root";
-$pass="";
-$dbname="projet";
-$connexion=mysqli_connect($server,$user,$pass,$dbname);
+// Add to cart logic
+if (isset($_POST['add_to_cart'])) {
+    $product_id = $_POST['product_id'];
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    if (isset($_SESSION['cart'][$product_id])) {
+        $_SESSION['cart'][$product_id]++;
+    } else {
+        $_SESSION['cart'][$product_id] = 1;
+    }
+    $message = "Produit ajouté au panier !";
+}
+
+// Get product details for popup if product_id is in URL
+$show_popup = false;
+$popup_product = null;
+if (isset($_GET['product_id']) && !empty($_GET['product_id'])) {
+    $product_id = intval($_GET['product_id']);
+    $popup_sql = "SELECT * FROM produit WHERE Id = $product_id";
+    $popup_result = mysqli_query($connexion, $popup_sql);
+    if (mysqli_num_rows($popup_result) > 0) {
+        $popup_product = mysqli_fetch_assoc($popup_result);
+        $show_popup = true;
+    }
+}
+
+$sql = "SELECT * FROM produit LIMIT 12";
+$result = mysqli_query($connexion, $sql);
+
+// Contact form logic
 if (
     isset($_POST['send']) &&
     isset($_POST['Nom']) && $_POST['Nom'] != "" &&
@@ -52,10 +53,8 @@ if (
     mysqli_query($connexion, $sql);
     header("location: pageaceuil.php");
 }
-
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,6 +63,18 @@ if (
   <title> DECORIFY </title>
   <link rel="stylesheet" href="CSS/style.css">
   <style>
+
+    .add-to-cart {
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  font-size: 16px;
+}
     body {
   padding-top: 80px; 
 }
@@ -121,11 +132,9 @@ if (
   font-size: 1rem;
   color: #111827;
 }
-/* /////////////////////////////////////////////// */
 
 .body-feature{
   font-family: 'Tahoma', sans-serif;
-  
   color: #fff;
   text-align: center;
   margin: 0;
@@ -178,7 +187,6 @@ p {
   margin-top: 5px;
   color: #555;
 }
-/* /////////////////////////////////////////////// */
 
 .testimonials {
   font-family: 'Tahoma', sans-serif;
@@ -251,11 +259,94 @@ p {
   color: #777;
 }
 
+/* Simple Popup Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.popup-close:hover {
+  color: #666;
+}
+
+.popup-product-info {
+  text-align: center;
+}
+
+.popup-product-info img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.popup-product-info h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.popup-product-info .price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1d4ed8;
+  margin-bottom: 15px;
+}
+
+.popup-product-info .description {
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.popup-add-cart {
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  font-size: 16px;
+}
+
+
+.popup-add-cart:hover {
+  background-color: #1e40af;
+}
     </style>
+</head>
 
-
+<body>
   <header>
-    
     <nav>
       <a href="#hero">Home</a>
       <a href="produitcom.php">Products</a>
@@ -264,9 +355,11 @@ p {
       <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
       <a href="loginout.php">Sign out</a>
       <?php else : ?>
-
       <a href="logincom.php">Log in</a>
       <a href="logininscr.php">Create an account</a>
+      <a href="cart.php">
+        <img src="image/cart.png" alt="" width="20">
+      </a>
       <?php endif ; ?>
     </nav>
     <h1><span style="color : blue ;">DECO</span>RIFY</h1>
@@ -283,32 +376,22 @@ p {
   <h2>تصفح حسب الفئات</h2>
   <p>اكتشف مجموعة واسعة من المنتجات المميزة</p>
   <div class="category-grid">
-
     <div class="category-box">
       <i class="icon">🛏️</i>
       <span>bedroom</span>
     </div>
-
     <div class="category-box">
       <i class="icon">🛋️</i>
       <span>living room</span>
     </div>
-
     <div class="category-box">
       <i class="icon">👕</i>
       <span>Fashion</span>
     </div>
-
     <div class="category-box">
       <i class="icon">🚽</i>
       <span>bathroom</span>
     </div>
-
-    <!-- <div class="category-box">
-      <i class="icon"></i>
-      <span>هدايا</span>
-    </div> -->
-
     <div class="category-box">
       <i class="icon">😊</i>
       <span>أخرى</span>
@@ -317,108 +400,48 @@ p {
 </section>
 
   <section class="products">
-
-    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <div class="product" id="product">
-                        <img src="image/40.jpg" alt="منتج 1">
-                        <div class="product-info">
-                            <h3><?php echo $row['name'] ?></h3>
-                            <p><?php echo $row['price'] ?>$</p>
-                            <button>أضف إلى السلة</button>
-                        </div>
+        <?php if (!empty($message)) echo "<p style='color:green;text-align:center;'>$message</p>"; ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <div class="product">
+                <a href="?product_id=<?php echo $row['Id']; ?>" style="text-decoration: none; color: inherit;">
+                    <img src="image/40.jpg" alt="<?php echo $row['name']; ?>">
+                    <div class="product-info">
+                        <h3><?php echo $row['name'] ?></h3>
+                        <p><?php echo $row['price'] ?>$</p>
                     </div>
-                <?php endwhile; ?>
-
-    <div class="product" id="product">
-        <button>Afficher tous</button>
-    </div>
-
-    <!-- <div class="product" id="product">
-      <img src="image/41.jpg" alt="منتج 2">
-      <div class="product-info">
-        <h3>ساعة ذكية</h3>
-        <p>250 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/42.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button name="add">أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/43.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-    <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-
-     <div class="product" id="product">
-      <img src="image/40.jpg" alt="منتج 3">
-      <div class="product-info">
-        <h3>حقيبة ظهر</h3>
-        <p>90 ر.س</p>
-        <button>أضف إلى السلة</button>
-      </div>
-    </div>
-</div> -->
-  </section>
+                </a>
+                <form method="post" action="">
+                    <input type="hidden" name="product_id" value="<?php echo $row['Id']; ?>">
+                    <button type="submit" name="add_to_cart" class="add-to-cart">أضف إلى السلة</button>
+                </form>
+            </div>
+        <?php endwhile; ?>
+        
+        <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
+            <button onclick="window.location.href='produitcom.php'"
+                style="padding: 10px 20px; background-color: #1d4ed8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                Afficher Tous
+            </button>
+        </div>
+    </section>
 
 <section class="features">
   <div class="feature-grid">
-
     <div class="feature">
       <div class="icon">🕒</div>
       <h3>توصيل سريع</h3>
       <p>توصيل لجميع المناطق خلال 24 ساعة</p>
     </div>
-
     <div class="feature">
       <div class="icon">🛡️</div>
       <h3>ضمان الجودة</h3>
       <p>استرجاع مجاني خلال 14 يوم</p>
     </div>
-
     <div class="feature">
       <div class="icon">💳</div>
       <h3>دفع آمن</h3>
       <p>طرق دفع متعددة وآمنة</p>
     </div>
-
   </div>
 </section>
 
@@ -477,5 +500,37 @@ p {
   <footer>
     &copy; 2025  DECORIFY - Reserved All Rights
   </footer>
+
+  <!-- Simple PHP Popup -->
+  <?php if ($show_popup && $popup_product): ?>
+  <div class="popup-overlay">
+    <div class="popup-content">
+      <a href="pageaceuil.php" class="popup-close">&times;</a>
+      <div class="popup-product-info">
+        <img src="image/40.jpg" alt="<?php echo htmlspecialchars($popup_product['name']); ?>">
+        <h3><?php echo htmlspecialchars($popup_product['name']); ?></h3>
+        <p class="price"><?php echo $popup_product['price']; ?>$</p>
+        
+        <!-- Stock display -->
+        <p class="stock">المخزون: 
+          <?php 
+            echo isset($popup_product['stock']) ? (int)$popup_product['stock'] : 'غير متوفر'; 
+          ?>
+        </p>
+
+        <?php if(isset($popup_product['description']) && !empty($popup_product['description'])): ?>
+          <p class="description"><?php echo htmlspecialchars($popup_product['description']); ?></p>
+        <?php endif; ?>
+
+        <form method="post" action="">
+          <input type="hidden" name="product_id" value="<?php echo $popup_product['Id']; ?>">
+          <button type="submit" name="add_to_cart" class="popup-add-cart">أضف إلى السلة</button>
+        </form>
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
 </body>
 </html>
