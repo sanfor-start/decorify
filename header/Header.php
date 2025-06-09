@@ -20,8 +20,7 @@
       <a href="logininscr.php">Create an account</a>
       <a href="cart.php">
         <!-- hhh -->
-        <img src="/image/cart.png" alt="">
-        <p>View Cart</p>
+        <img src="image/cart.png" alt="" width="20">
       </a>
       <?php endif ; ?>
     </nav>
