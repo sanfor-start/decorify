@@ -26,13 +26,13 @@ if (isset($_POST['add_to_cart'])) {
 $show_popup = false;
 $popup_product = null;
 if (isset($_GET['product_id']) && !empty($_GET['product_id'])) {
-    $product_id = intval($_GET['product_id']);
-    $popup_sql = "SELECT * FROM produit WHERE Id = $product_id";
-    $popup_result = mysqli_query($connexion, $popup_sql);
-    if (mysqli_num_rows($popup_result) > 0) {
-        $popup_product = mysqli_fetch_assoc($popup_result);
-        $show_popup = true;
-    }
+  $product_id = intval($_GET['product_id']);
+  $popup_sql = "SELECT * FROM produit WHERE Id = $product_id";
+  $popup_result = mysqli_query($connexion, $popup_sql);
+  if (mysqli_num_rows($popup_result) > 0) {
+    $popup_product = mysqli_fetch_assoc($popup_result);
+    $show_popup = true;
+  }
 }
 
 $sql = "SELECT * FROM produit";
@@ -239,7 +239,7 @@ $result = mysqli_query($connexion, $sql);
       <?php while ($row = mysqli_fetch_assoc($result)): ?>
         <div class="product-card">
           <a href="?product_id=<?php echo $row['Id']; ?>" class="product-link">
-            <img src="image/40.jpg" alt="<?= htmlspecialchars($row['name']) ?>">
+            <img src="image/<?php echo !empty($row['image']) ? htmlspecialchars($row['image']) : '40.jpg'; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
             <h3><?= htmlspecialchars($row['name']) ?></h3>
           </a>
           <p><?= htmlspecialchars($row['description']) ?></p>
@@ -259,29 +259,29 @@ $result = mysqli_query($connexion, $sql);
 
   <!-- Simple PHP Popup -->
   <?php if ($show_popup && $popup_product): ?>
-  <div class="popup-overlay">
-    <div class="popup-content">
-      <a href="produitcom.php" class="popup-close">&times;</a>
-      <div class="popup-product-info">
-        <img src="image/40.jpg" alt="<?php echo htmlspecialchars($popup_product['name']); ?>">
-        <h3><?php echo htmlspecialchars($popup_product['name']); ?></h3>
-        <p class="price"><?php echo $popup_product['price']; ?> €</p>
-        <p class="stock">المخزون: 
-          <?php 
-            echo isset($popup_product['stock']) ? (int)$popup_product['stock'] : 'غير متوفر'; 
-          ?>
-        </p>
+    <div class="popup-overlay">
+      <div class="popup-content">
+        <a href="produitcom.php" class="popup-close">&times;</a>
+        <div class="popup-product-info">
+          <img src="image/40.jpg" alt="<?php echo htmlspecialchars($popup_product['name']); ?>">
+          <h3><?php echo htmlspecialchars($popup_product['name']); ?></h3>
+          <p class="price"><?php echo $popup_product['price']; ?> €</p>
+          <p class="stock">المخزون:
+            <?php
+            echo isset($popup_product['stock']) ? (int)$popup_product['stock'] : 'غير متوفر';
+            ?>
+          </p>
 
-        <?php if(isset($popup_product['description']) && !empty($popup_product['description'])): ?>
-          <p class="description"><?php echo htmlspecialchars($popup_product['description']); ?></p>
-        <?php endif; ?>
-        <form method="post" action="">
-          <input type="hidden" name="product_id" value="<?php echo $popup_product['Id']; ?>">
-          <button type="submit" name="add_to_cart" class="popup-add-cart">Ajouter au panier</button>
-        </form>
+          <?php if (isset($popup_product['description']) && !empty($popup_product['description'])): ?>
+            <p class="description"><?php echo htmlspecialchars($popup_product['description']); ?></p>
+          <?php endif; ?>
+          <form method="post" action="">
+            <input type="hidden" name="product_id" value="<?php echo $popup_product['Id']; ?>">
+            <button type="submit" name="add_to_cart" class="popup-add-cart">Ajouter au panier</button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
   <?php endif; ?>
 
 </body>

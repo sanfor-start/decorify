@@ -17,16 +17,25 @@ $error = "";
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     // Add new product
     if (isset($_POST['add_product'])) {
         $name = mysqli_real_escape_string($connexion, $_POST['name']);
         $description = mysqli_real_escape_string($connexion, $_POST['description']);
         $price = floatval($_POST['price']);
-        $stock = intval($_POST['stock']); // Added stock field
-        
+        $stock = intval($_POST['stock']);
+
+        // Logic d'ajjoute d'image
+        $image_name = null;
+
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+            $image_name = time() . '_' . basename($_FILES['image']['name']);
+            move_uploaded_file($_FILES['image']['tmp_name'], 'image/' . $image_name);
+        }
+        // finir ici
+
         if (!empty($name) && !empty($description) && $price > 0) {
-            $sql = "INSERT INTO produit (name, description, price, stock) VALUES ('$name', '$description', '$price', '$stock')";
+            $sql = "INSERT INTO produit (name, description, price, stock, image) VALUES ('$name', '$description', '$price', '$stock', " . ($image_name ? "'$image_name'" : "NULL") . ")";
             if (mysqli_query($connexion, $sql)) {
                 $message = "Product added successfully!";
             } else {
@@ -36,17 +45,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Please fill all fields correctly.";
         }
     }
-    
+
     // Update product
     if (isset($_POST['update_product'])) {
         $id = intval($_POST['id']);
         $name = mysqli_real_escape_string($connexion, $_POST['name']);
         $description = mysqli_real_escape_string($connexion, $_POST['description']);
         $price = floatval($_POST['price']);
-        $stock = intval($_POST['stock']); // Added stock field
-        
+        $stock = intval($_POST['stock']);
+
+        // Logic de modifier une image
+        $image_sql = "";
+
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+            $image_name = time() . '_' . basename($_FILES['image']['name']);
+            move_uploaded_file($_FILES['image']['tmp_name'], 'image/' . $image_name);
+            $image_sql = ", image='$image_name'";
+        }
+        // finir ici
+
         if (!empty($name) && !empty($description) && $price > 0) {
-            $sql = "UPDATE produit SET name='$name', description='$description', price='$price', stock='$stock' WHERE Id=$id";
+            $sql = "UPDATE produit SET name='$name', description='$description', price='$price', stock='$stock' $image_sql WHERE Id=$id";
             if (mysqli_query($connexion, $sql)) {
                 $message = "Product updated successfully!";
             } else {
@@ -56,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Please fill all fields correctly.";
         }
     }
-    
+
     // Delete product
     if (isset($_POST['delete_product'])) {
         $id = intval($_POST['id']);
@@ -85,6 +104,7 @@ if (isset($_GET['edit'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,7 +127,7 @@ if (isset($_GET['edit'])) {
             margin: 0 auto;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -278,7 +298,7 @@ if (isset($_GET['edit'])) {
             background: white;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         .products-table th,
@@ -322,24 +342,24 @@ if (isset($_GET['edit'])) {
             .container {
                 margin: 10px;
             }
-            
+
             .content {
                 padding: 15px;
             }
-            
+
             .products-table {
                 font-size: 14px;
             }
-            
+
             .products-table th,
             .products-table td {
                 padding: 8px;
             }
-            
+
             .action-buttons {
                 flex-direction: column;
             }
-            
+
             .btn {
                 margin-bottom: 5px;
                 text-align: center;
@@ -347,6 +367,7 @@ if (isset($_GET['edit'])) {
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -364,7 +385,7 @@ if (isset($_GET['edit'])) {
             <?php if (!empty($message)): ?>
                 <div class="message success"><?php echo $message; ?></div>
             <?php endif; ?>
-            
+
             <?php if (!empty($error)): ?>
                 <div class="message error"><?php echo $error; ?></div>
             <?php endif; ?>
@@ -372,37 +393,47 @@ if (isset($_GET['edit'])) {
             <!-- Add/Edit Product Form -->
             <div class="form-section">
                 <h2><?php echo $edit_product ? '✏️ Edit Product' : '➕ Add New Product'; ?></h2>
-                <form method="POST" action="">
+                <form method="POST" action="" enctype="multipart/form-data">
                     <?php if ($edit_product): ?>
                         <input type="hidden" name="id" value="<?php echo $edit_product['Id']; ?>">
                     <?php endif; ?>
-                    
+
                     <div class="form-group">
                         <label for="name">Product Name:</label>
-                        <input type="text" id="name" name="name" 
-                               value="<?php echo $edit_product ? htmlspecialchars($edit_product['name']) : ''; ?>" 
-                               required>
+                        <input type="text" id="name" name="name"
+                            value="<?php echo $edit_product ? htmlspecialchars($edit_product['name']) : ''; ?>"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="description">Description:</label>
                         <textarea id="description" name="description" required><?php echo $edit_product ? htmlspecialchars($edit_product['description']) : ''; ?></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="price">Price ($):</label>
-                        <input type="number" id="price" name="price" step="0.01" min="0" 
-                               value="<?php echo $edit_product ? $edit_product['price'] : ''; ?>" 
-                               required>
+                        <input type="number" id="price" name="price" step="0.01" min="0"
+                            value="<?php echo $edit_product ? $edit_product['price'] : ''; ?>"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="stock">Stock:</label>
-                        <input type="number" id="stock" name="stock" min="0" 
-                               value="<?php echo $edit_product ? $edit_product['stock'] : '0'; ?>" 
-                               required>
+                        <input type="number" id="stock" name="stock" min="0"
+                            value="<?php echo $edit_product ? $edit_product['stock'] : '0'; ?>"
+                            required>
                     </div>
-                    
+
+                    <!-- image upload -->
+
+                    <div class="form-group">
+                        <label for="image">Image du produit :</label>
+                        <input type="file" id="image" name="image" accept="image/*">
+                        <?php if ($edit_product && !empty($edit_product['image'])): ?>
+                            <img src="image/<?php echo htmlspecialchars($edit_product['image']); ?>" alt="Image actuelle" width="80">
+                        <?php endif; ?>
+                    </div>
+
                     <?php if ($edit_product): ?>
                         <button type="submit" name="update_product" class="btn btn-success">✅ Update Product</button>
                         <a href="admin.php" class="btn btn-secondary">❌ Cancel</a>
@@ -420,6 +451,7 @@ if (isset($_GET['edit'])) {
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Image</th>
                                 <th>Name</th>
                                 <th>Description</th>
                                 <th>Price</th>
@@ -431,6 +463,13 @@ if (isset($_GET['edit'])) {
                             <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                 <tr>
                                     <td><?php echo $row['Id']; ?></td>
+                                    <td>
+                                        <?php if (!empty($row['image'])): ?>
+                                            <img src="image/<?php echo htmlspecialchars($row['image']); ?>" alt="Produit" width="60">
+                                        <?php else: ?>
+                                            <span>Pas d'image</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                                     <td><?php echo htmlspecialchars(substr($row['description'], 0, 50)) . '...'; ?></td>
                                     <td>$<?php echo number_format($row['price'], 2); ?></td>
@@ -457,4 +496,5 @@ if (isset($_GET['edit'])) {
         </div>
     </div>
 </body>
+
 </html>

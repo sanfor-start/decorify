@@ -1,37 +1,37 @@
 <?php
-$server="localhost";
-$user="root";
-$pass="";
-$dbname="projet";
-$connexion=mysqli_connect($server,$user,$pass,$dbname);
+$server = "localhost";
+$user = "root";
+$pass = "";
+$dbname = "projet";
+$connexion = mysqli_connect($server, $user, $pass, $dbname);
 
 session_start();
 
 // Add to cart logic
 if (isset($_POST['add_to_cart'])) {
-    $product_id = $_POST['product_id'];
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-    if (isset($_SESSION['cart'][$product_id])) {
-        $_SESSION['cart'][$product_id]++;
-    } else {
-        $_SESSION['cart'][$product_id] = 1;
-    }
-    $message = "Produit ajouté au panier !";
+  $product_id = $_POST['product_id'];
+  if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+  }
+  if (isset($_SESSION['cart'][$product_id])) {
+    $_SESSION['cart'][$product_id]++;
+  } else {
+    $_SESSION['cart'][$product_id] = 1;
+  }
+  $message = "Produit ajouté au panier !";
 }
 
 // Get product details for popup if product_id is in URL
 $show_popup = false;
 $popup_product = null;
 if (isset($_GET['product_id']) && !empty($_GET['product_id'])) {
-    $product_id = intval($_GET['product_id']);
-    $popup_sql = "SELECT * FROM produit WHERE Id = $product_id";
-    $popup_result = mysqli_query($connexion, $popup_sql);
-    if (mysqli_num_rows($popup_result) > 0) {
-        $popup_product = mysqli_fetch_assoc($popup_result);
-        $show_popup = true;
-    }
+  $product_id = intval($_GET['product_id']);
+  $popup_sql = "SELECT * FROM produit WHERE Id = $product_id";
+  $popup_result = mysqli_query($connexion, $popup_sql);
+  if (mysqli_num_rows($popup_result) > 0) {
+    $popup_product = mysqli_fetch_assoc($popup_result);
+    $show_popup = true;
+  }
 }
 
 $sql = "SELECT * FROM produit LIMIT 12";
@@ -39,310 +39,312 @@ $result = mysqli_query($connexion, $sql);
 
 // Contact form logic
 if (
-    isset($_POST['send']) &&
-    isset($_POST['Nom']) && $_POST['Nom'] != "" &&
-    isset($_POST['Prenom']) && $_POST['Prenom'] != "" &&
-    isset($_POST['Email']) && $_POST['Email'] != "" &&
-    isset($_POST['Messege']) && $_POST['Messege'] != "" 
+  isset($_POST['send']) &&
+  isset($_POST['Nom']) && $_POST['Nom'] != "" &&
+  isset($_POST['Prenom']) && $_POST['Prenom'] != "" &&
+  isset($_POST['Email']) && $_POST['Email'] != "" &&
+  isset($_POST['Messege']) && $_POST['Messege'] != ""
 ) {
-    $Nom = $_POST['Nom'];
-    $Prenom = $_POST['Prenom'];
-    $Email = $_POST['Email'];
-    $Messege = $_POST['Messege'];
-    $sql="INSERT INTO `contact us`(`Id`, `Nom`, `Prenom`, `Email`, `Messege`) VALUES ( null,'$Nom','$Prenom','$Email','$Messege')";
-    mysqli_query($connexion, $sql);
-    header("location: pageaceuil.php");
+  $Nom = $_POST['Nom'];
+  $Prenom = $_POST['Prenom'];
+  $Email = $_POST['Email'];
+  $Messege = $_POST['Messege'];
+  $sql = "INSERT INTO `contact us`(`Id`, `Nom`, `Prenom`, `Email`, `Messege`) VALUES ( null,'$Nom','$Prenom','$Email','$Messege')";
+  mysqli_query($connexion, $sql);
+  header("location: pageaceuil.php");
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title> DECORIFY </title>
   <link rel="stylesheet" href="CSS/style.css">
   <style>
-
     .add-to-cart {
-  background-color: #1d4ed8;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  font-size: 16px;
-}
+      background-color: #1d4ed8;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      font-size: 16px;
+    }
+
     body {
-  padding-top: 80px; 
-}
+      padding-top: 80px;
+    }
 
-.categories {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: #f9fafb;
-}
+    .categories {
+      text-align: center;
+      padding: 4rem 2rem;
+      background-color: #f9fafb;
+    }
 
-.categories h2 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #111827;
-}
+    .categories h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #111827;
+    }
 
-.categories p {
-  color: #6b7280;
-  margin-bottom: 2rem;
-}
+    .categories p {
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
 
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-.category-box {
-  background-color: #f1f5f9;
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
+    .category-box {
+      background-color: #f1f5f9;
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
 
-.category-box:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
+    .category-box:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.category-box .icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.8rem;
-  color: #3b82f6;
-}
+    .category-box .icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+      color: #3b82f6;
+    }
 
-.category-box span {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #111827;
-}
+    .category-box span {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #111827;
+    }
 
-.body-feature{
-  font-family: 'Tahoma', sans-serif;
-  color: #fff;
-  text-align: center;
-  margin: 0;
-  padding: 40px 0;
-  direction: rtl;
-}
+    .body-feature {
+      font-family: 'Tahoma', sans-serif;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 40px 0;
+      direction: rtl;
+    }
 
-.feature {
-  background-color: #f1f5f9;
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
+    .feature {
+      background-color: #f1f5f9;
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
 
-.feature:hover{
-  transform: translateY(-6px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
+    .feature:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.feature {
-  width: 200px;
-}
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
+    .feature {
+      width: 200px;
+    }
 
-.icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.8rem;
-  color: #3b82f6;
-}
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-}
+    .icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+      color: #3b82f6;
+    }
 
-p {
-  font-size: 14px;
-  margin-top: 5px;
-  color: #555;
-}
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
 
-.testimonials {
-  font-family: 'Tahoma', sans-serif;
-  margin: 0;
-  background-color: #fff;
-  direction: rtl;
-  text-align: right;
-  padding: 40px;
-}
+    p {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #555;
+    }
 
-.testimonials {
-  max-width: 1000px;
-  margin: auto;
-}
+    .testimonials {
+      font-family: 'Tahoma', sans-serif;
+      margin: 0;
+      background-color: #fff;
+      direction: rtl;
+      text-align: right;
+      padding: 40px;
+    }
 
-.testimonials h2 {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  text-align: center;
-}
+    .testimonials {
+      max-width: 1000px;
+      margin: auto;
+    }
 
-.subtitle {
-  color: #888;
-  text-align: center;
-  margin-bottom: 30px;
-}
+    .testimonials h2 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-align: center;
+    }
 
-.testimonial {
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+    .subtitle {
+      color: #888;
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-.stars {
-  color: #ffc107;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
+    .testimonial {
+      background-color: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
 
-.review {
-  font-size: 16px;
-  margin-bottom: 15px;
-  color: #333;
-}
+    .stars {
+      color: #ffc107;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    .review {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #333;
+    }
 
-.avatar {
-  background-color: #2f70ff;
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-}
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-.date {
-  font-size: 13px;
-  color: #777;
-}
+    .avatar {
+      background-color: #2f70ff;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
 
-/* Simple Popup Styles */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .date {
+      font-size: 13px;
+      color: #777;
+    }
 
-.popup-content {
-  background: white;
-  border-radius: 10px;
-  padding: 30px;
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
+    /* Simple Popup Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.popup-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
+    .popup-content {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
 
-.popup-close:hover {
-  color: #666;
-}
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
 
-.popup-product-info {
-  text-align: center;
-}
+    .popup-close:hover {
+      color: #666;
+    }
 
-.popup-product-info img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
+    .popup-product-info {
+      text-align: center;
+    }
 
-.popup-product-info h3 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: #333;
-}
+    .popup-product-info img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
 
-.popup-product-info .price {
-  font-size: 20px;
-  font-weight: bold;
-  color: #1d4ed8;
-  margin-bottom: 15px;
-}
+    .popup-product-info h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333;
+    }
 
-.popup-product-info .description {
-  margin-bottom: 20px;
-  line-height: 1.5;
-  color: #666;
-}
+    .popup-product-info .price {
+      font-size: 20px;
+      font-weight: bold;
+      color: #1d4ed8;
+      margin-bottom: 15px;
+    }
 
-.popup-add-cart {
-  background-color: #1d4ed8;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  font-size: 16px;
-}
+    .popup-product-info .description {
+      margin-bottom: 20px;
+      line-height: 1.5;
+      color: #666;
+    }
+
+    .popup-add-cart {
+      background-color: #1d4ed8;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      font-size: 16px;
+    }
 
 
-.popup-add-cart:hover {
-  background-color: #1e40af;
-}
-    </style>
+    .popup-add-cart:hover {
+      background-color: #1e40af;
+    }
+  </style>
 </head>
 
 <body>
@@ -352,15 +354,15 @@ p {
       <a href="produitcom.php">Products</a>
       <a href="#contact">Contact us</a>
 
-      <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user']!="") : ?>
-      <a href="loginout.php">Sign out</a>
+      <?php if (isset($_SESSION['Nom_user']) && $_SESSION['Nom_user'] != "") : ?>
+        <a href="loginout.php">Sign out</a>
       <?php else : ?>
-      <a href="logincom.php">Log in</a>
-      <a href="logininscr.php">Create an account</a>
-      <a href="cart.php">
-        <img src="image/cart.png" alt="" width="20">
-      </a>
-      <?php endif ; ?>
+        <a href="logincom.php">Log in</a>
+        <a href="logininscr.php">Create an account</a>
+        <a href="cart.php">
+          <img src="image/cart.png" alt="" width="20">
+        </a>
+      <?php endif; ?>
     </nav>
     <h1><span style="color : blue ;">DECO</span>RIFY</h1>
   </header>
@@ -373,79 +375,79 @@ p {
   </section>
 
   <section class="categories">
-  <h2>تصفح حسب الفئات</h2>
-  <p>اكتشف مجموعة واسعة من المنتجات المميزة</p>
-  <div class="category-grid">
-    <div class="category-box">
-      <i class="icon">🛏️</i>
-      <span>bedroom</span>
+    <h2>تصفح حسب الفئات</h2>
+    <p>اكتشف مجموعة واسعة من المنتجات المميزة</p>
+    <div class="category-grid">
+      <div class="category-box">
+        <i class="icon">🛏️</i>
+        <span>bedroom</span>
+      </div>
+      <div class="category-box">
+        <i class="icon">🛋️</i>
+        <span>living room</span>
+      </div>
+      <div class="category-box">
+        <i class="icon">👕</i>
+        <span>Fashion</span>
+      </div>
+      <div class="category-box">
+        <i class="icon">🚽</i>
+        <span>bathroom</span>
+      </div>
+      <div class="category-box">
+        <i class="icon">😊</i>
+        <span>أخرى</span>
+      </div>
     </div>
-    <div class="category-box">
-      <i class="icon">🛋️</i>
-      <span>living room</span>
-    </div>
-    <div class="category-box">
-      <i class="icon">👕</i>
-      <span>Fashion</span>
-    </div>
-    <div class="category-box">
-      <i class="icon">🚽</i>
-      <span>bathroom</span>
-    </div>
-    <div class="category-box">
-      <i class="icon">😊</i>
-      <span>أخرى</span>
-    </div>
-  </div>
-</section>
+  </section>
 
   <section class="products">
-        <?php if (!empty($message)) echo "<p style='color:green;text-align:center;'>$message</p>"; ?>
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
-            <div class="product">
-                <a href="?product_id=<?php echo $row['Id']; ?>" style="text-decoration: none; color: inherit;">
-                    <img src="image/40.jpg" alt="<?php echo $row['name']; ?>">
-                    <div class="product-info">
-                        <h3><?php echo $row['name'] ?></h3>
-                        <p><?php echo $row['price'] ?>$</p>
-                    </div>
-                </a>
-                <form method="post" action="">
-                    <input type="hidden" name="product_id" value="<?php echo $row['Id']; ?>">
-                    <button type="submit" name="add_to_cart" class="add-to-cart">أضف إلى السلة</button>
-                </form>
-            </div>
-        <?php endwhile; ?>
-        
-        <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
-            <button onclick="window.location.href='produitcom.php'"
-                style="padding: 10px 20px; background-color: #1d4ed8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
-                Afficher Tous
-            </button>
-        </div>
-    </section>
+    <?php if (!empty($message)) echo "<p style='color:green;text-align:center;'>$message</p>"; ?>
+    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+      <div class="product">
+        <a href="?product_id=<?php echo $row['Id']; ?>" style="text-decoration: none; color: inherit;">
+          <img src="image/<?php echo !empty($row['image']) ? htmlspecialchars($row['image']) : '40.jpg'; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+          <div class="product-info">
+            <h3><?php echo $row['name'] ?></h3>
+            <p><?php echo $row['price'] ?>$</p>
+          </div>
+        </a>
+        <form method="post" action="">
+          <input type="hidden" name="product_id" value="<?php echo $row['Id']; ?>">
+          <button type="submit" name="add_to_cart" class="add-to-cart">أضف إلى السلة</button>
+        </form>
+      </div>
+    <?php endwhile; ?>
 
-<section class="features">
-  <div class="feature-grid">
-    <div class="feature">
-      <div class="icon">🕒</div>
-      <h3>توصيل سريع</h3>
-      <p>توصيل لجميع المناطق خلال 24 ساعة</p>
+    <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
+      <button onclick="window.location.href='produitcom.php'"
+        style="padding: 10px 20px; background-color: #1d4ed8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+        Afficher Tous
+      </button>
     </div>
-    <div class="feature">
-      <div class="icon">🛡️</div>
-      <h3>ضمان الجودة</h3>
-      <p>استرجاع مجاني خلال 14 يوم</p>
-    </div>
-    <div class="feature">
-      <div class="icon">💳</div>
-      <h3>دفع آمن</h3>
-      <p>طرق دفع متعددة وآمنة</p>
-    </div>
-  </div>
-</section>
+  </section>
 
-    <section class="contact" id="contact">
+  <section class="features">
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="icon">🕒</div>
+        <h3>توصيل سريع</h3>
+        <p>توصيل لجميع المناطق خلال 24 ساعة</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛡️</div>
+        <h3>ضمان الجودة</h3>
+        <p>استرجاع مجاني خلال 14 يوم</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💳</div>
+        <h3>دفع آمن</h3>
+        <p>طرق دفع متعددة وآمنة</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
     <h2> Contact us </h2>
     <form action="" method="post">
       <label for="Nom">Nom</label>
@@ -464,7 +466,7 @@ p {
     </form>
   </section>
 
- <section class="testimonials">
+  <section class="testimonials">
     <h2>آراء عملائنا</h2>
     <p class="subtitle">ماذا يقول عملاؤنا عن منتجاتنا</p>
 
@@ -498,39 +500,41 @@ p {
   </section>
 
   <footer>
-    &copy; 2025  DECORIFY - Reserved All Rights
+    &copy; 2025 DECORIFY - Reserved All Rights
   </footer>
 
   <!-- Simple PHP Popup -->
   <?php if ($show_popup && $popup_product): ?>
-  <div class="popup-overlay">
-    <div class="popup-content">
-      <a href="pageaceuil.php" class="popup-close">&times;</a>
-      <div class="popup-product-info">
-        <img src="image/40.jpg" alt="<?php echo htmlspecialchars($popup_product['name']); ?>">
-        <h3><?php echo htmlspecialchars($popup_product['name']); ?></h3>
-        <p class="price"><?php echo $popup_product['price']; ?>$</p>
-        
-        <!-- Stock display -->
-        <p class="stock">المخزون: 
-          <?php 
-            echo isset($popup_product['stock']) ? (int)$popup_product['stock'] : 'غير متوفر'; 
-          ?>
-        </p>
+    <div class="popup-overlay">
+      <div class="popup-content">
+        <a href="pageaceuil.php" class="popup-close">&times;</a>
+        <div class="popup-product-info">
 
-        <?php if(isset($popup_product['description']) && !empty($popup_product['description'])): ?>
-          <p class="description"><?php echo htmlspecialchars($popup_product['description']); ?></p>
-        <?php endif; ?>
+          <img src="image/<?php echo !empty($row['image']) ? htmlspecialchars($row['image']) : '40.jpg'; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+          <h3><?php echo htmlspecialchars($popup_product['name']); ?></h3>
+          <p class="price"><?php echo $popup_product['price']; ?>$</p>
 
-        <form method="post" action="">
-          <input type="hidden" name="product_id" value="<?php echo $popup_product['Id']; ?>">
-          <button type="submit" name="add_to_cart" class="popup-add-cart">أضف إلى السلة</button>
-        </form>
+          <!-- Stock display -->
+          <p class="stock">المخزون:
+            <?php
+            echo isset($popup_product['stock']) ? (int)$popup_product['stock'] : 'غير متوفر';
+            ?>
+          </p>
+
+          <?php if (isset($popup_product['description']) && !empty($popup_product['description'])): ?>
+            <p class="description"><?php echo htmlspecialchars($popup_product['description']); ?></p>
+          <?php endif; ?>
+
+          <form method="post" action="">
+            <input type="hidden" name="product_id" value="<?php echo $popup_product['Id']; ?>">
+            <button type="submit" name="add_to_cart" class="popup-add-cart">أضف إلى السلة</button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-<?php endif; ?>
+  <?php endif; ?>
 
 
 </body>
+
 </html>
