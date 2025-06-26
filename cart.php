@@ -10,6 +10,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             padding: 2.5rem;
             position: relative;
             overflow: hidden;
@@ -75,7 +76,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .nav-btn.primary {
@@ -91,7 +92,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
 
         .nav-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .cart-title {
@@ -128,7 +129,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
         .cart-product {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -151,7 +152,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
 
         .cart-product:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
         }
 
         .product-image {
@@ -161,7 +162,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
             object-fit: cover;
             border-radius: 15px;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .product-name {
@@ -222,7 +223,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
         .grand-total {
             font-size: 2.2rem;
             font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .checkout-btn {
@@ -243,7 +244,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
 
         .checkout-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .empty-cart {
@@ -292,26 +293,27 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
                 padding: 1.5rem;
                 margin: 10px;
             }
-            
+
             .cart-title {
                 font-size: 2rem;
             }
-            
+
             .cart-items {
                 grid-template-columns: 1fr;
             }
-            
+
             .header-nav {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .nav-buttons {
                 justify-content: center;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="cart-container">
         <div class="header-nav">
@@ -326,25 +328,25 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
                 </a>
             </div>
         </div>
-        
+
         <div class="cart-title">
             <i class="fas fa-shopping-cart"></i>
             Votre Panier
         </div>
-        
+
         <?php
         if (!empty($_SESSION['cart'])) {
             echo '<div class="cart-items">';
             $grand_total = 0;
             foreach ($_SESSION['cart'] as $id => $qty) {
-                $sql = "SELECT name, price FROM produit WHERE Id = $id";
+                $sql = "SELECT * FROM produit WHERE Id = $id";
                 $res = mysqli_query($connexion, $sql);
                 $prod = mysqli_fetch_assoc($res);
                 $total = $prod['price'] * $qty;
                 $grand_total += $total;
-                
+
                 echo '<div class="cart-product">';
-                echo '<img src="image/40.jpg" alt="Produit" class="product-image">';
+                echo '<img src="image/' . (!empty($prod['image']) ? htmlspecialchars($prod['image']) : '40.jpg') . '" alt="' . htmlspecialchars($prod['name']) . '" class="product-image">';
                 echo '<h3 class="product-name">' . htmlspecialchars($prod['name']) . '</h3>';
                 echo '<div class="product-price"><i class="fas fa-tag"></i>' . htmlspecialchars($prod['price']) . ' $</div>';
                 echo '<div class="product-qty"><i class="fas fa-cubes"></i> Quantité : ' . $qty . '</div>';
@@ -352,7 +354,7 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
                 echo '</div>';
             }
             echo '</div>';
-            
+
             echo '<div class="cart-summary">';
             echo '<h2><i class="fas fa-calculator"></i>Résumé de la commande</h2>';
             echo '<div class="grand-total">' . $grand_total . ' $</div>';
@@ -369,4 +371,5 @@ $connexion = mysqli_connect($server, $user, $pass, $dbname);
         ?>
     </div>
 </body>
+
 </html>

@@ -30,10 +30,10 @@ $product = mysqli_fetch_assoc($result);
 <div class="product-popup-content">
     <h3><?php echo htmlspecialchars($product['name']); ?></h3>
     <div class="product-popup-details">
-        <img src="image/40.jpg" alt="<?php echo htmlspecialchars($product['name']); ?>">
+        <img src="image/<?php echo !empty($row['image']) ? htmlspecialchars($row['image']) : '40.jpg'; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
         <div class="product-info">
             <p class="price"><?php echo $product['price']; ?>$</p>
-            <?php if(isset($product['description'])): ?>
+            <?php if (isset($product['description'])): ?>
                 <p class="description"><?php echo htmlspecialchars($product['description']); ?></p>
             <?php endif; ?>
             <form method="post" action="">
